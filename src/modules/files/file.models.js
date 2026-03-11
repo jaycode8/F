@@ -33,7 +33,9 @@ const filesSchema = new mongoose.Schema(
             ref: "users",
             required: true,
             index: true
-        }
+        },
+
+        folder: String,
 
     },
     { timestamps: true }

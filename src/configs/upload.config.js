@@ -4,46 +4,73 @@ import path from "path";
 import fs from "fs/promises";
 
 
+const allowedExt = [
+    ".png", ".jpg", ".jpeg", ".webp", ".gif",
+    ".pdf", ".doc", ".docx",
+    ".xls", ".xlsx",
+    ".txt",
+    ".zip"
+];
+
 export const deleteFile = async (url) => {
     if (!url) return false;
 
     try {
-        const relativePath = url.split("/uploads/")[1];
-        if (!relativePath) return false;
 
-        const filePath = path.join(process.cwd(), "uploads", relativePath);
+        const relativePath = new URL(url).pathname;
+        const filePath = path.join(process.cwd(), relativePath);
+
         await fs.unlink(filePath);
 
         return true;
-    } catch {
+
+    } catch (error) {
         return false;
     }
 };
 
 export const uploadFile = async (file, baseUrl, folder) => {
-    const uploadDir = path.join(process.cwd(), "uploads");
 
-    await fs.mkdir(uploadDir, { recursive: true });
+    const uploadRoot = path.join(process.cwd(), "uploads");
+
+    const targetDir = folder
+        ? path.join(uploadRoot, folder)
+        : uploadRoot;
+
+    // create nested folders if they don't exist
+    await fs.mkdir(targetDir, { recursive: true });
 
     const ext = file.originalname.split(".").pop();
     const fileName = `${crypto.randomUUID()}.${ext}`;
-    const filePath = path.join(uploadDir, fileName);
+
+    const filePath = path.join(targetDir, fileName);
 
     try {
+
         await fs.writeFile(filePath, file.buffer);
 
-        return `${baseUrl}/uploads/${folder}/${fileName}`;
+        const uploadUrl = folder
+            ? `${baseUrl}/uploads/${folder}/${fileName}`
+            : `${baseUrl}/uploads/${fileName}`;
+
+        return uploadUrl;
+
     } catch (error) {
+
         console.error("Upload Error:", error);
-        return "";
+        return null;
+
     }
 };
 
 export const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
     fileFilter: (req, file, cb) => {
-        if (!file.mimetype.startsWith("image/")) {
+
+        const ext = path.extname(file.originalname).toLowerCase();
+
+        if (!allowedExt.includes(ext)) {
             return cb(new Error("Only image files are allowed"));
         }
         cb(null, true);

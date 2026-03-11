@@ -1,11 +1,12 @@
-// import { deleteImage } from "../../configs/upload.config.js";
+import { deleteFile } from "../../configs/upload.config.js";
 import FileModel from "./file.models.js";
 
 
-// export const handleImageDeletion = async (id) => {
-//     const menu = await MenuModel.findById(id);
-//     await deleteImage(menu.image);
-// }
+export const handleFileDeletion = async (id) => {
+    const file = await FileModel.findById(id);
+    const x = await deleteFile(file.fileUrl);
+    console.log(x)
+}
 
 export const destroy = async (id) => {
     return await FileModel.findByIdAndDelete(id);

@@ -33,6 +33,21 @@ const userSchema = new mongoose.Schema(
 
         lastLogin: Date,
 
+        role: {
+            type: String,
+            enum: ["admin", "user"],
+            default: "user"
+        },
+
+        storageUsed: {
+            type: Number,
+            default: 0
+        },
+
+        storageLimit: {
+            type: Number,
+            default: 500000000 // 500MB
+        }
     },
     { timestamps: true }
 );
