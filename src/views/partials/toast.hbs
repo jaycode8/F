@@ -1,0 +1,144 @@
+<div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-2.5 items-end pointer-events-none"></div>
+
+<script>
+    (function () {
+
+        const DURATION = 4500;
+        const MAX_TOASTS = 5;
+
+        const TYPES = {
+            success: {
+                bar: 'bg-emerald-500',
+                icon: 'text-emerald-400',
+                badge: 'bg-emerald-500/15 border-emerald-500/25 text-emerald-400',
+                svg: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>`,
+            },
+            error: {
+                bar: 'bg-red-500',
+                icon: 'text-red-400',
+                badge: 'bg-red-500/15 border-red-500/25 text-red-400',
+                svg: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>`,
+            },
+            warning: {
+                bar: 'bg-amber-500',
+                icon: 'text-amber-400',
+                badge: 'bg-amber-500/15 border-amber-500/25 text-amber-400',
+                svg: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>`,
+            },
+            info: {
+                bar: 'bg-sky-500',
+                icon: 'text-sky-400',
+                badge: 'bg-sky-500/15 border-sky-500/25 text-sky-400',
+                svg: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>`,
+            },
+            loading: {
+                bar: 'bg-stone-500',
+                icon: 'text-stone-400',
+                badge: 'bg-stone-500/15 border-stone-500/25 text-stone-400',
+                svg: null,
+            },
+        };
+
+        function show({type = 'info', message, duration = DURATION, id = null}) {
+            const container = document.getElementById('toast-container');
+            const cfg = TYPES[type] || TYPES.info;
+            const toastId = id || 'toast-' + Date.now();
+
+            const existing = document.getElementById(toastId);
+            if (existing) existing.remove();
+
+            const all = container.querySelectorAll('.toast-item');
+            if (all.length >= MAX_TOASTS) all[0].remove();
+
+            const el = document.createElement('div');
+            el.id = toastId;
+            el.className = 'toast-item pointer-events-auto w-80 max-w-[calc(100vw-3rem)]';
+            el.style.cssText = 'opacity:0; transform:translateX(16px); transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16,1,0.3,1);';
+
+            el.innerHTML = `
+      <div class="relative overflow-hidden rounded-2xl
+        dark:bg-obsidian-950 bg-white
+        border dark:border-stone-800 border-stone-200
+        shadow-2xl shadow-black/20">
+
+        <div class="h-0.5 w-full ${cfg.bar}"></div>
+
+        ${type !== 'loading' ? `
+          <div class="absolute top-0 left-0 h-0.5 ${cfg.bar} opacity-30 toast-progress" style="width:100%"></div>
+        ` : ''}
+
+        <div class="flex items-center gap-3.5 px-4 py-3.5">
+
+          <div class="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center border ${cfg.badge}">
+            ${type === 'loading'
+                    ? `<svg class="w-4 h-4 ${cfg.icon} animate-spin" fill="none" viewBox="0 0 24 24">
+                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/>
+                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                 </svg>`
+                    : `<svg class="w-4 h-4 ${cfg.icon}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   ${cfg.svg}
+                 </svg>`
+                }
+          </div>
+
+          <p class="flex-1 font-mono text-xs dark:text-stone-300 text-stone-600 leading-relaxed min-w-0">
+            ${message || ''}
+          </p>
+
+          <button onclick="dismissToast('${toastId}')"
+            class="p-1 rounded-lg shrink-0 dark:text-stone-700 text-stone-300
+              dark:hover:text-stone-400 hover:text-stone-500
+              dark:hover:bg-stone-800 hover:bg-stone-100
+              transition-colors duration-150">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>`;
+
+            container.appendChild(el);
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateX(0)';
+                });
+            });
+
+            if (type !== 'loading' && duration > 0) {
+                const bar = el.querySelector('.toast-progress');
+                if (bar) {
+                    bar.style.transition = `width ${duration}ms linear`;
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {bar.style.width = '0%';});
+                    });
+                }
+                setTimeout(() => dismissToast(toastId), duration);
+            }
+
+            return toastId;
+        }
+
+        window.dismissToast = function (id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(16px)';
+            setTimeout(() => el.remove(), 280);
+        };
+
+        window.toast = {
+            success: (message, opts = {}) => show({type: 'success', message, ...opts}),
+            error: (message, opts = {}) => show({type: 'error', message, ...opts}),
+            warning: (message, opts = {}) => show({type: 'warning', message, ...opts}),
+            info: (message, opts = {}) => show({type: 'info', message, ...opts}),
+            loading: (message, opts = {}) => show({type: 'loading', message, duration: 0, ...opts}),
+
+            resolve: (id, type, message, opts = {}) => show({type, message, id, ...opts}),
+
+            dismiss: (id) => dismissToast(id),
+        };
+
+    })();
+</script>

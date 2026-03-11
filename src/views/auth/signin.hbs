@@ -1,7 +1,6 @@
 <div class="min-h-dvh flex">
     <div class="hidden lg:flex lg:w-[60%] 2xl:w-3/4 relative overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1800&q=80" alt="File network"
-            class="absolute inset-0 w-full h-full object-cover" />
+        <img src="/imgs/signin.jpeg" alt="File network" class="absolute inset-0 w-full h-full object-cover" />
         <div class="absolute inset-0 dark:bg-obsidian-950/65 bg-white/30 transition-colors duration-300"></div>
         <div
             class="absolute inset-0 dark:bg-gradient-to-r dark:from-transparent dark:to-obsidian-950 bg-gradient-to-r from-transparent to-white transition-colors duration-300">
@@ -14,14 +13,13 @@
                         d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                 </svg>
             </div>
-            <!-- <span class="font-display font-extrabold text-2xl dark:text-white text-stone-900 tracking-tight">F</span> -->
         </div>
 
         <div class="absolute bottom-10 left-10 right-10 z-10">
             <p class="font-display font-bold text-3xl dark:text-white text-stone-900 leading-snug mb-3">
                 Your files.<br />Your network.<br /><span class="text-amber-500">Your control.</span>
             </p>
-            <p class="font-mono text-sm dark:text-stone-400 text-stone-600 max-w-sm">
+            <p class="font-mono text-sm dark:text-stone-400 text-stone-950 max-w-sm">
                 Upload, share and access files across every device on your local network — fast, private, no cloud
                 needed.
             </p>
@@ -29,13 +27,13 @@
             <div class="flex items-center gap-6 mt-8">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span class="font-mono text-xs dark:text-stone-400 text-stone-600">{{onlineDevices}} devices
+                    <span class="font-mono text-xs dark:text-stone-400 text-stone-950">{{onlineDevices}} devices
                         online</span>
                 </div>
                 <div class="w-px h-4 dark:bg-stone-700 bg-stone-300"></div>
-                <div class="font-mono text-xs dark:text-stone-400 text-stone-600">{{totalFiles}} files stored</div>
+                <div class="font-mono text-xs dark:text-stone-400 text-stone-950">{{totalFiles}} files stored</div>
                 <div class="w-px h-4 dark:bg-stone-700 bg-stone-300"></div>
-                <div class="font-mono text-xs dark:text-stone-400 text-stone-600">{{storageUsed}} used</div>
+                <div class="font-mono text-xs dark:text-stone-400 text-stone-950">{{storageUsed}} used</div>
             </div>
         </div>
     </div>
@@ -67,7 +65,7 @@
         </div>
         {{/if}}
 
-        <form action="/auth/signin" method="POST" class="space-y-5">
+        <form class="space-y-5">
             <div>
                 <label
                     class="block font-mono text-[11px] uppercase tracking-widest dark:text-stone-500 text-stone-400 mb-2">
@@ -172,4 +170,45 @@
             closed.classList.add('hidden');
         }
     }
+
+    document.querySelector('form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const btn = this.querySelector('button[type="submit"]');
+        const identifier = this.username.value.trim();
+        const password = this.password.value;
+        const remember = this.remember.checked;
+
+        if (!identifier || !password) {
+            window.toast.warning('Missing fields', 'Please enter your username or email and password.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Signing in…';
+
+        try {
+            const res = await fetch('/auth', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({identifier, password, remember}),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                toast.success(data.message);
+                setTimeout(() => {window.location.href = '/dashboard';}, 900);
+            } else {
+                toast.error(data.detail);
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            }
+
+        } catch (err) {
+            btn.disabled = false;
+            btn.textContent = 'Sign In';
+            toast.error(err.detail ? err.detail : 'Could not reach the server. Check your network.');
+        }
+    });
 </script>

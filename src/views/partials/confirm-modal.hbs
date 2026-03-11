@@ -1,0 +1,179 @@
+<div id="confirm-modal" class="hidden fixed inset-0 z-[90] flexs items-center justify-center p-4">
+
+    <div id="confirm-backdrop" class="absolute inset-0 dark:bg-black/70 bg-black/40 backdrop-blur-sm"
+        style="opacity:0; transition: opacity 0.2s ease;" onclick="confirmCancel()">
+    </div>
+
+    <div id="confirm-panel"
+        class="relative w-full max-w-sm dark:bg-obsidian-950 bg-white rounded-2xl border dark:border-stone-800 border-stone-200 shadow-2xl overflow-hidden"
+        style="opacity:0; transform:scale(0.95) translateY(8px); transition: opacity 0.25s cubic-bezier(0.16,1,0.3,1), transform 0.25s cubic-bezier(0.16,1,0.3,1);">
+
+        <div id="confirm-bar" class="h-0.5 w-full bg-red-500"></div>
+
+        <div class="p-6">
+            <div class="flex items-start gap-4 mb-5">
+                <div id="confirm-icon-wrap"
+                    class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center border bg-red-500/10 border-red-500/25">
+                    <svg id="confirm-icon" class="w-5 h-5 text-red-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0 pt-0.5">
+                    <h3 id="confirm-title"
+                        class="font-display font-bold text-lg dark:text-white text-stone-900 leading-snug mb-1">
+                        Are you sure?
+                    </h3>
+                    <p id="confirm-message"
+                        class="font-mono text-xs dark:text-stone-400 text-stone-500 leading-relaxed">
+                    </p>
+                </div>
+            </div>
+            <div id="confirm-detail-wrap" class="hidden mb-5">
+                <div
+                    class="px-3.5 py-3 rounded-xl dark:bg-stone-900 bg-stone-50 border dark:border-stone-800 border-stone-200">
+                    <p id="confirm-detail" class="font-mono text-xs dark:text-stone-300 text-stone-600 break-all"></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="confirm-cancel-btn" onclick="confirmCancel()" class="flex-1 py-2.5 rounded-xl font-mono text-xs
+            dark:bg-stone-900 bg-stone-100
+            dark:border-stone-800 border-stone-200 border
+            dark:text-stone-400 text-stone-600
+            dark:hover:bg-stone-800 hover:bg-stone-200
+            transition-all duration-150">
+                    Cancel
+                </button>
+                <button id="confirm-ok-btn" onclick="confirmOk()" class="flex-1 py-2.5 rounded-xl font-display font-bold text-sm
+            bg-red-500 hover:bg-red-400 text-white active:scale-95
+            shadow-lg shadow-red-500/20 transition-all duration-150">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+
+        let _resolve = null;
+
+        const VARIANTS = {
+            danger: {
+                bar: 'bg-red-500',
+                iconWrap: 'bg-red-500/10 border-red-500/25',
+                iconCls: 'text-red-400',
+                okCls: 'bg-red-500 hover:bg-red-400 text-white shadow-red-500/20',
+                okLabel: 'Delete',
+                svg: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>`,
+            },
+            warning: {
+                bar: 'bg-amber-500',
+                iconWrap: 'bg-amber-500/10 border-amber-500/25',
+                iconCls: 'text-amber-400',
+                okCls: 'bg-amber-500 hover:bg-amber-400 text-obsidian-950 shadow-amber-500/20',
+                okLabel: 'Confirm',
+                svg: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>`,
+            },
+            info: {
+                bar: 'bg-sky-500',
+                iconWrap: 'bg-sky-500/10 border-sky-500/25',
+                iconCls: 'text-sky-400',
+                okCls: 'bg-sky-500 hover:bg-sky-400 text-white shadow-sky-500/20',
+                okLabel: 'Proceed',
+                svg: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>`,
+            },
+            success: {
+                bar: 'bg-emerald-500',
+                iconWrap: 'bg-emerald-500/10 border-emerald-500/25',
+                iconCls: 'text-emerald-400',
+                okCls: 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/20',
+                okLabel: 'Confirm',
+                svg: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>`,
+            },
+        };
+
+        window.confirm = function ({
+            type = 'danger',
+            title = 'Are you sure?',
+            message = 'This action cannot be undone.',
+            detail = null,
+            okLabel = null,
+            cancelLabel = 'Cancel',
+        } = {}) {
+            return new Promise(resolve => {
+                _resolve = resolve;
+                const cfg = VARIANTS[type] || VARIANTS.danger;
+
+                document.getElementById('confirm-bar').className = `h-0.5 w-full ${cfg.bar}`;
+                document.getElementById('confirm-icon-wrap').className = `w-10 h-10 rounded-xl shrink-0 flex items-center justify-center border ${cfg.iconWrap}`;
+                document.getElementById('confirm-icon').className = `w-5 h-5 ${cfg.iconCls}`;
+                document.getElementById('confirm-icon').innerHTML = cfg.svg;
+                document.getElementById('confirm-title').textContent = title;
+                document.getElementById('confirm-message').textContent = message;
+
+                const detailWrap = document.getElementById('confirm-detail-wrap');
+                if (detail) {
+                    document.getElementById('confirm-detail').textContent = detail;
+                    detailWrap.classList.remove('hidden');
+                } else {
+                    detailWrap.classList.add('hidden');
+                }
+
+                const okBtn = document.getElementById('confirm-ok-btn');
+                const cancelBtn = document.getElementById('confirm-cancel-btn');
+                okBtn.textContent = okLabel || cfg.okLabel;
+                cancelBtn.textContent = cancelLabel;
+                okBtn.className = `flex-1 py-2.5 rounded-xl font-display font-bold text-sm ${cfg.okCls} active:scale-95 shadow-lg transition-all duration-150`;
+
+                const modal = document.getElementById('confirm-modal');
+                const panel = document.getElementById('confirm-panel');
+                const backdrop = document.getElementById('confirm-backdrop');
+                modal.classList.remove('hidden');
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        backdrop.style.opacity = '1';
+                        panel.style.opacity = '1';
+                        panel.style.transform = 'scale(1) translateY(0)';
+                    });
+                });
+            });
+        };
+
+        window.confirmOk = function () {
+            closeConfirm();
+            if (_resolve) {_resolve(true); _resolve = null;}
+        };
+
+        window.confirmCancel = function () {
+            closeConfirm();
+            if (_resolve) {_resolve(false); _resolve = null;}
+        };
+
+        function closeConfirm() {
+            const modal = document.getElementById('confirm-modal');
+            const panel = document.getElementById('confirm-panel');
+            const backdrop = document.getElementById('confirm-backdrop');
+
+            backdrop.style.opacity = '0';
+            panel.style.opacity = '0';
+            panel.style.transform = 'scale(0.95) translateY(8px)';
+
+            setTimeout(() => modal.classList.add('hidden'), 250);
+        }
+
+        document.addEventListener('keydown', e => {
+            const modal = document.getElementById('confirm-modal');
+            if (modal.classList.contains('hidden')) return;
+            if (e.key === 'Escape') confirmCancel();
+            if (e.key === 'Enter') confirmOk();
+        });
+
+    })();
+</script>
