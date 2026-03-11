@@ -12,7 +12,7 @@ router.route("/:id")
     .delete(FileControllers.destroy);
 
 router.route("/")
-    .post(AuthMiddleware.requireAuth, handleUpload(upload), FileControllers.add)
+    .post(AuthMiddleware.requireAuth, handleUpload(upload.array("files", 10)), FileControllers.add)
     .get(FileControllers.list);
 
 export default router;

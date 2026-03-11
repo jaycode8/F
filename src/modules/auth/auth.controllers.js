@@ -28,8 +28,8 @@ export const auth = async (req, res) => {
 
         const user = await AuthServices.auth(identifier, password);
 
-        const accessToken = createAccessToken(user._id);
-        const refreshToken = createRefreshToken(user._id, remember);
+        const accessToken = createAccessToken(user._id, user.username, user.role);
+        const refreshToken = createRefreshToken(user._id, user.username, user.role, remember);
 
         const cookieOptions = {
             httpOnly: true,

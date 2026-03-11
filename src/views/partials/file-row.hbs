@@ -1,0 +1,164 @@
+<div class="grid grid-cols-12 gap-4 px-5 py-3.5
+  border-b dark:border-stone-800/50 border-stone-100 last:border-0
+  dark:hover:bg-stone-900/50 hover:bg-stone-50
+  transition-colors duration-100 group">
+
+    <!-- Name + icon -->
+    <div class="col-span-5 flex items-center gap-3 min-w-0">
+        <div class="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center
+      {{#if (eq type 'pdf')}}bg-red-500/10
+      {{else if (eq type 'docx')}}bg-sky-500/10
+      {{else if (eq type 'xlsx')}}bg-emerald-500/10
+      {{else if (eq type 'pptx')}}bg-orange-500/10
+      {{else if (eq type 'image')}}bg-purple-500/10
+      {{else if (eq type 'video')}}bg-rose-500/10
+      {{else if (eq type 'audio')}}bg-cyan-500/10
+      {{else if (eq type 'archive')}}bg-yellow-500/10
+      {{else if (eq type 'code')}}bg-lime-500/10
+      {{else if (eq type 'txt')}}bg-stone-500/10
+      {{else}}bg-amber-500/10{{/if}}">
+
+            {{!-- PDF --}}
+            {{#if (eq type 'pdf')}}
+            <svg class="w-4 h-4 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M9 13h1.5a1 1 0 000-2H9v4m0-2h1.5M14 11v4m0-4h1a1 1 0 010 2h-1" />
+            </svg>
+
+            {{!-- DOCX --}}
+            {{else if (eq type 'docx')}}
+            <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M9 13l1.5 4 1.5-4 1.5 4 1.5-4" />
+            </svg>
+
+            {{!-- XLSX --}}
+            {{else if (eq type 'xlsx')}}
+            <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M9 11l2 2-2 2m4-4l-2 2 2 2" />
+            </svg>
+
+            {{!-- PPTX --}}
+            {{else if (eq type 'pptx')}}
+            <svg class="w-4 h-4 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h2a1 1 0 000-2H9v4" />
+            </svg>
+
+            {{!-- IMAGE --}}
+            {{else if (eq type 'image')}}
+            <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+
+            {{!-- VIDEO --}}
+            {{else if (eq type 'video')}}
+            <svg class="w-4 h-4 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+
+            {{!-- AUDIO --}}
+            {{else if (eq type 'audio')}}
+            <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+            </svg>
+
+            {{!-- ARCHIVE --}}
+            {{else if (eq type 'archive')}}
+            <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+            </svg>
+
+            {{!-- CODE --}}
+            {{else if (eq type 'code')}}
+            <svg class="w-4 h-4 text-lime-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+
+            {{!-- TXT --}}
+            {{else if (eq type 'txt')}}
+            <svg class="w-4 h-4 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+
+            {{!-- DEFAULT --}}
+            {{else}}
+            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            {{/if}}
+        </div>
+
+        <div class="min-w-0">
+            <a href="/files/view/{{id}}" target="_blank"
+                class="font-mono text-xs dark:text-stone-200 text-stone-700 truncate block hover:text-amber-500 dark:hover:text-amber-400 transition-colors">
+                {{name}}
+            </a>
+            <p class="font-mono text-[10px] dark:text-stone-600 text-stone-400 truncate">{{uploadedBy}}</p>
+        </div>
+    </div>
+
+    <!-- Type badge -->
+    <div class="col-span-2 flex items-center">
+        <span class="font-mono text-[10px] uppercase px-2 py-1 rounded-md
+      {{#if (eq type 'pdf')}}bg-red-500/10 text-red-400
+      {{else if (eq type 'docx')}}bg-sky-500/10 text-sky-400
+      {{else if (eq type 'xlsx')}}bg-emerald-500/10 text-emerald-400
+      {{else if (eq type 'pptx')}}bg-orange-500/10 text-orange-400
+      {{else if (eq type 'image')}}bg-purple-500/10 text-purple-400
+      {{else if (eq type 'video')}}bg-rose-500/10 text-rose-400
+      {{else if (eq type 'audio')}}bg-cyan-500/10 text-cyan-400
+      {{else if (eq type 'archive')}}bg-yellow-500/10 text-yellow-400
+      {{else if (eq type 'code')}}bg-lime-500/10 text-lime-400
+      {{else if (eq type 'txt')}}bg-stone-500/10 text-stone-400
+      {{else}}bg-amber-500/10 text-amber-400{{/if}}">
+            {{type}}
+        </span>
+    </div>
+
+    <!-- Size -->
+    <div class="col-span-2 flex items-center">
+        <span class="font-mono text-xs dark:text-stone-500 text-stone-400">{{size}}</span>
+    </div>
+
+    <!-- Modified -->
+    <div class="col-span-2 flex items-center">
+        <span class="font-mono text-xs dark:text-stone-500 text-stone-400">{{uploadedAt}}</span>
+    </div>
+
+    <!-- Actions -->
+    <div
+        class="col-span-1 flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <a href="/files/view/{{id}}" target="_blank"
+            class="p-1.5 rounded-lg dark:hover:bg-stone-800 hover:bg-stone-100 dark:text-stone-500 text-stone-400 dark:hover:text-amber-400 hover:text-amber-500 transition-colors"
+            title="Open in new tab">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+        </a>
+        <a href="/files/download/{{id}}"
+            class="p-1.5 rounded-lg dark:hover:bg-stone-800 hover:bg-stone-100 dark:text-stone-500 text-stone-400 dark:hover:text-stone-200 hover:text-stone-600 transition-colors"
+            title="Download">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+        </a>
+    </div>
+</div>

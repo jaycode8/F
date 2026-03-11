@@ -72,29 +72,35 @@ export const list = async (req, res) => {
 
 export const add = async (req, res) => {
     try {
-        const file = req.file;
-        const folder = req.body.folder ? req.body.folder : null;
+        const username = req.user?.username;
+
+        const files = req.files;
+        const folder = req.body?.folder ? `${username}/${req.body.folder}` : username;
         const safeFolder = folder?.replace(/[^a-zA-Z0-9/_-]/g, "");
 
-        if (!file) return res.status(400).json({ detail: "File is required" });
+        if (!files || files.length === 0) return res.status(400).json({ detail: "Atlest one file is required" });
 
         const baseUrl = `${req.protocol}://${req.get("host")}`;
+        const uploadedFiles = [];
 
-        const fileUrl = await uploadFile(file, baseUrl, safeFolder);
-        if (!fileUrl) throw new Error("File upload failed");
+        for (const file of files) {
+            const fileUrl = await uploadFile(file, baseUrl, safeFolder);
+            if (!fileUrl) throw new Error("File upload failed");
 
-        const data = {
-            fileUrl: fileUrl,
-            fileName: path.parse(file.originalname).name,
-            mimetype: file.mimetype,
-            fileSize: file.size,
-            owner: req.user,
-            folder: safeFolder
-        };
+            const data = {
+                fileUrl: fileUrl,
+                fileName: path.parse(file.originalname).name,
+                mimetype: file.mimetype,
+                fileSize: file.size,
+                owner: req.user?._id,
+                folder: safeFolder
+            };
 
-        await FileServices.add(data);
+            const saved = await FileServices.add(data);
+            uploadedFiles.push(saved);
+        }
 
-        res.status(201).json({ message: `File uploaded successfully.` });
+        res.status(201).json({ message: `${files.length} file(s) uploaded successfully.` });
     } catch (error) {
         console.log(error)
 

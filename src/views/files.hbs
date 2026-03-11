@@ -1,0 +1,181 @@
+{{> topbar
+pageTitle="Files"
+pageSubtitle="Browse your folders and files"
+onlineDevices=onlineDevices
+totalFiles=totalFiles
+storageUsed=storageUsed
+storageTotal=storageTotal
+storagePercent=storagePercent
+unreadNotifications=unreadNotifications
+userInitial=userInitial
+userName=userName
+userEmail=userEmail
+userRole=userRole
+}}
+
+<div class="px-6 py-6 space-y-8 max-w-6xl mx-auto">
+
+    <!-- ── Toolbar ── -->
+    <div class="flex items-center gap-3 flex-wrap">
+
+        <!-- Search -->
+        <div class="relative flex-1 min-w-48">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 dark:text-stone-600 text-stone-400 pointer-events-none"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="search-input" placeholder="Search folders…" class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm font-mono
+          dark:bg-obsidian-950 bg-white
+          dark:border-stone-800 border-stone-200 border
+          dark:text-stone-300 text-stone-700
+          dark:placeholder-stone-600 placeholder-stone-400
+          focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20
+          transition-all duration-200" />
+        </div>
+
+        <!-- New folder -->
+        <button onclick="document.getElementById('new-folder-modal').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs
+        dark:bg-stone-900 bg-stone-100 border dark:border-stone-800 border-stone-200
+        dark:text-stone-300 text-stone-600 dark:hover:border-amber-500/50 hover:border-amber-500/50
+        transition-all duration-150">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
+            </svg>
+            New Folder
+        </button>
+
+        <!-- Upload -->
+        <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs
+        bg-amber-500 hover:bg-amber-400 text-obsidian-950 font-bold
+        shadow-lg shadow-amber-500/20 active:scale-95
+        transition-all duration-150">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Upload
+        </button>
+    </div>
+
+    <!-- ── Folders grid ── -->
+    {{#if folders.length}}
+    <div>
+        <h3 class="font-display font-bold text-base dark:text-white text-stone-900 mb-4">Folders</h3>
+        <div id="folders-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {{#each folders}}
+            <a href="/files/folder/{{this.id}}" class="folder-card group relative dark:bg-obsidian-950 bg-white rounded-2xl border dark:border-stone-800 border-stone-200 p-4
+          dark:hover:border-amber-500/40 hover:border-amber-500/40
+          dark:hover:bg-stone-900/60 hover:bg-amber-50/60
+          hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/5
+          transition-all duration-200 cursor-pointer">
+
+                <!-- Folder icon -->
+                <div class="relative mb-3">
+                    <!-- Folder back tab -->
+                    <div class="w-8 h-2.5 rounded-t-md mb-0 ml-1
+            {{#if this.color}}bg-{{this.color}}-400/60{{else}}bg-amber-400/60{{/if}}"></div>
+                    <!-- Folder body -->
+                    <div
+                        class="w-full h-14 rounded-b-xl rounded-tr-xl flex items-center justify-center
+            {{#if this.color}}bg-{{this.color}}-500/15 border border-{{this.color}}-500/20{{else}}bg-amber-500/15 border border-amber-500/20{{/if}}">
+                        <svg class="w-7 h-7 {{#if this.color}}text-{{this.color}}-400{{else}}text-amber-400{{/if}}"
+                            fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M3 7a2 2 0 012-2h4.586a1 1 0 01.707.293L12 7h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Folder name + meta -->
+                <p class="font-mono text-xs font-medium dark:text-stone-200 text-stone-700 truncate mb-1">{{this.name}}
+                </p>
+                <div class="flex items-center justify-between">
+                    <span class="font-mono text-[10px] dark:text-stone-600 text-stone-400">{{this.fileCount}}
+                        files</span>
+                    <span class="font-mono text-[10px] dark:text-stone-600 text-stone-400">{{this.size}}</span>
+                </div>
+
+                <!-- Hover arrow -->
+                <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                    <svg class="w-3.5 h-3.5 dark:text-stone-500 text-stone-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+            </a>
+            {{/each}}
+        </div>
+    </div>
+    {{/if}}
+
+    <!-- ── Loose files (not in any folder) ── -->
+    {{#if looseFiles.length}}
+    <div>
+        <h3 class="font-display font-bold text-base dark:text-white text-stone-900 mb-4">Uncategorised</h3>
+        <div
+            class="dark:bg-obsidian-950 bg-white rounded-2xl border dark:border-stone-800 border-stone-200 overflow-hidden">
+            <div class="grid grid-cols-12 gap-4 px-5 py-3 border-b dark:border-stone-800 border-stone-100">
+                <div
+                    class="col-span-5 font-mono text-[11px] uppercase tracking-widest dark:text-stone-600 text-stone-400">
+                    Name</div>
+                <div
+                    class="col-span-2 font-mono text-[11px] uppercase tracking-widest dark:text-stone-600 text-stone-400">
+                    Type</div>
+                <div
+                    class="col-span-2 font-mono text-[11px] uppercase tracking-widest dark:text-stone-600 text-stone-400">
+                    Size</div>
+                <div
+                    class="col-span-2 font-mono text-[11px] uppercase tracking-widest dark:text-stone-600 text-stone-400">
+                    Modified</div>
+                <div class="col-span-1"></div>
+            </div>
+            {{#each looseFiles}}
+            {{> file-row this}}
+            {{/each}}
+        </div>
+    </div>
+    {{/if}}
+
+    <!-- ── Empty state ── -->
+    {{#unless folders.length}}{{#unless looseFiles.length}}
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div
+            class="w-16 h-16 rounded-2xl dark:bg-stone-900 bg-stone-50 border dark:border-stone-800 border-stone-200 flex items-center justify-center mb-5">
+            <svg class="w-7 h-7 dark:text-stone-700 text-stone-300" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 7a2 2 0 012-2h4.586a1 1 0 01.707.293L12 7h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+            </svg>
+        </div>
+        <p class="font-display font-bold text-lg dark:text-stone-500 text-stone-400 mb-1">No files yet</p>
+        <p class="font-mono text-xs dark:text-stone-600 text-stone-400 mb-6">Create a folder or upload your first file
+        </p>
+        <div class="flex items-center gap-3">
+            <button onclick="document.getElementById('new-folder-modal').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs
+          dark:bg-stone-900 bg-stone-100 border dark:border-stone-800 border-stone-200
+          dark:text-stone-300 text-stone-600 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
+                </svg>
+                New Folder
+            </button>
+            <button onclick="document.getElementById('upload-modal').classList.remove('hidden')"
+                class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs bg-amber-500 hover:bg-amber-400 text-obsidian-950 font-bold transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                Upload Files
+            </button>
+        </div>
+    </div>
+    {{/unless}}{{/unless}}
+
+</div>
+{{>upload-form}}
+<button onclick="document.getElementById('upload-modal').classList.remove('hidden')">
+    Upload
+</button>

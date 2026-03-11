@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 import UserRoutes from "./modules/users/user.routes.js";
 import AuthRoutes from "./modules/auth/auth.routes.js";
 import FileRoutes from "./modules/files/file.routers.js";
+import CoreRoutes from "./modules/core/core.routes.js";
 
 const app = express();
 
@@ -40,7 +41,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
-// app.use("/", CoreRoutes);
+app.use("/", CoreRoutes);
 app.use("/users", UserRoutes);
 app.use("/auth", AuthRoutes);
 app.use("/files", FileRoutes);
