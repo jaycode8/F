@@ -1,3 +1,57 @@
+import * as FolderServices from "../folders/folder.services.js";
+import * as FileServices from "../files/file.services.js";
+
+export const explore = async (req, res) => {
+    try {
+        const { folder, page, limit, search } = req.query;
+        const owner = "5c69077e-7682-4d89-809c-f6ec2a58f970"; // replace with req.user._id
+
+        // Run both queries in parallel
+        const [foldersData, filesData] = await Promise.all([
+            FolderServices.list(page, limit, {
+                owner,
+                parent: folder || null,
+                ...(search && { search }),
+            }),
+            FileServices.list(page, limit, {
+                owner,
+                folder: folder || null,
+                ...(search && { search }),
+            }),
+        ]);
+
+        // If we're inside a folder, fetch its info for breadcrumb
+        let currentFolderData = null;
+        if (folder) {
+            currentFolderData = await FolderServices.get(folder);
+        }
+
+        // Build breadcrumb trail by walking up parents
+        const breadcrumbs = [];
+        if (currentFolderData) {
+            breadcrumbs.unshift({ name: currentFolderData.name, id: currentFolderData._id });
+            let parent = currentFolderData.parent;
+            while (parent) {
+                const p = await FolderServices.get(parent);
+                if (!p) break;
+                breadcrumbs.unshift({ name: p.name, id: p._id });
+                parent = p.parent;
+            }
+        }
+
+        res.render('explore', {
+            title: currentFolderData ? currentFolderData.name : 'Files',
+            foldersData,
+            filesData,
+            currentFolder: folder || null,
+            currentFolderData,
+            breadcrumbs,
+            currentSearch: search || null,
+        });
+    } catch (error) {
+        res.status(500).json({ detail: error.message });
+    }
+};
 
 export const files = (req, res) => {
     res.render('files', {

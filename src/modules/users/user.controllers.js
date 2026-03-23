@@ -32,7 +32,12 @@ export const list = async (req, res) => {
     try {
         const { page, limit, ...filters } = req.query;
         const data = await UserServices.list(page, limit, filters);
-        res.status(200).json({ data });
+        //res.status(200).json({ data });
+        res.render('users', {
+            title: 'Users',
+            userData: data,
+            // currentSearch: search || null,
+        });
     } catch (error) {
         res.status(500).json({ detail: error.message });
     }
@@ -41,6 +46,7 @@ export const list = async (req, res) => {
 export const add = async (req, res) => {
     try {
         const data = await UserServices.add(req.body);
+
         res.status(201).json({ data, message: "User successfully created" });
     } catch (error) {
         res.status(500).json({ detail: error.message });

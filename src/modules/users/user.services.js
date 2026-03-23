@@ -1,6 +1,8 @@
 import UserModel from "./user.models.js";
 import bcrypt from "bcrypt";
 import { paginate } from "../../utils/paginate.utils.js";
+import path from "path";
+import fs from "fs/promises";
 
 const saltRounds = +process.env.SALT_ROUNDS;
 
@@ -23,6 +25,10 @@ export const list = async (page, limit, filters = {}) => {
 
 export const add = async (data) => {
     if (data.password) data.password = await bcrypt.hash(data.password, saltRounds);
-    const user = new UserModel(data);
-    return await user.save();
+    const user = await UserModel.create(data);
+
+    const uploadRoot = path.join(process.cwd(), "uploads");
+    await fs.mkdir(path.join(uploadRoot, user.username), { recursive: true });
+
+    return user;
 };

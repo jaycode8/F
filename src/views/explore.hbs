@@ -1,0 +1,360 @@
+{{> topbar}}
+
+<div class="px-6 py-6 space-y-6 max-w-6xl mx-auto">
+
+    <!-- ── Breadcrumb ── -->
+    <div class="flex items-center gap-2 font-mono text-xs flex-wrap">
+        <a href="/explore"
+            class="dark:text-stone-500 text-stone-400 dark:hover:text-amber-400 hover:text-amber-500 transition-colors">
+            Root
+        </a>
+        {{#each breadcrumbs}}
+        <svg class="w-3 h-3 dark:text-stone-700 text-stone-300 shrink-0" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        {{#if @last}}
+        <span class="dark:text-stone-300 text-stone-600">{{this.name}}</span>
+        {{else}}
+        <a href="/explore?folder={{this.id}}"
+            class="dark:text-stone-500 text-stone-400 dark:hover:text-amber-400 hover:text-amber-500 transition-colors">
+            {{this.name}}
+        </a>
+        {{/if}}
+        {{/each}}
+    </div>
+
+    <!-- ── Toolbar ── -->
+    <div class="flex items-center gap-3 flex-wrap">
+
+        <!-- Search -->
+        <form method="GET" action="/explore" class="relative flex-1 min-w-48 flex items-center gap-2">
+            {{#if currentFolder}}
+            <input type="hidden" name="folder" value="{{currentFolder}}" />
+            {{/if}}
+            <div class="relative flex-1">
+                <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 dark:text-stone-600 text-stone-400 pointer-events-none"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" name="search"
+                    placeholder="Search in {{#if currentFolderData}}{{currentFolderData.name}}{{else}}root{{/if}}…"
+                    value="{{currentSearch}}" class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm font-mono
+            dark:bg-obsidian-950 bg-white
+            dark:border-stone-800 border-stone-200 border
+            dark:text-stone-300 text-stone-700
+            dark:placeholder-stone-600 placeholder-stone-400
+            focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20
+            transition-all duration-200" />
+            </div>
+            <button type="submit" class="px-4 py-2.5 rounded-xl font-mono text-xs
+          dark:bg-stone-900 bg-stone-100 border dark:border-stone-800 border-stone-200
+          dark:text-stone-300 text-stone-600
+          dark:hover:border-amber-500/50 hover:border-amber-500/50
+          transition-all duration-150">
+                Search
+            </button>
+            {{#if currentSearch}}
+            <a href="/explore{{#if currentFolder}}?folder={{currentFolder}}{{/if}}" class="px-4 py-2.5 rounded-xl font-mono text-xs
+          dark:bg-stone-900 bg-stone-100 border dark:border-stone-800 border-stone-200
+          dark:text-red-400 text-red-400
+          dark:hover:border-red-500/50 hover:border-red-500/50
+          transition-all duration-150">
+                Clear
+            </a>
+            {{/if}}
+        </form>
+
+        <!-- Upload -->
+        <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs
+        bg-amber-500 hover:bg-amber-400 text-obsidian-950 font-bold
+        shadow-lg shadow-amber-500/20 active:scale-95 transition-all duration-150">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Upload
+        </button>
+    </div>
+
+    <!-- ── Subfolders ── -->
+    {{#if foldersData.results.length}}
+    <div>
+        <h3 class="font-display font-bold text-sm dark:text-white text-stone-900 mb-3">
+            Folders
+            <span class="font-mono font-normal text-xs dark:text-stone-600 text-stone-400 ml-2">
+                {{foldersData.count}}
+            </span>
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            {{#each foldersData.results}}
+            <a href="/explore?folder={{this._id}}" class="group relative dark:bg-obsidian-950 bg-white rounded-2xl border
+          dark:border-stone-800 border-stone-200 p-4
+          dark:hover:border-amber-500/40 hover:border-amber-500/40
+          dark:hover:bg-stone-900/60 hover:bg-amber-50/40
+          hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber-500/5
+          transition-all duration-200 cursor-pointer">
+
+                <!-- Folder shape -->
+                <div class="mb-3">
+                    <div class="w-8 h-2 rounded-t-md ml-1 bg-amber-400/50"></div>
+                    <div class="w-full h-12 rounded-b-xl rounded-tr-xl
+            bg-amber-500/10 border border-amber-500/20
+            flex items-center justify-center">
+                        <svg class="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M3 7a2 2 0 012-2h4.586a1 1 0 01.707.293L12 7h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <p class="font-mono text-xs font-medium dark:text-stone-200 text-stone-700 truncate mb-1">
+                    {{this.name}}
+                </p>
+                <div class="flex items-center justify-between">
+                    <span class="font-mono text-[10px] dark:text-stone-600 text-stone-400">
+                        {{#if (eq this.level 0)}}root{{else}}level {{this.level}}{{/if}}
+                    </span>
+                    <span class="font-mono text-[10px] dark:text-stone-600 text-stone-400">
+                        {{formatDate this.createdAt}}
+                    </span>
+                </div>
+
+                <!-- Hover arrow -->
+                <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                    <svg class="w-3.5 h-3.5 dark:text-stone-500 text-stone-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+            </a>
+            {{/each}}
+        </div>
+
+        <!-- Folder pagination -->
+        {{#if (gt foldersData.total_pages 1)}}
+        <div class="flex items-center gap-2 mt-4">
+            {{#if foldersData.previous}}
+            <a href="?folderPage={{prev foldersData.page}}{{#if currentFolder}}&folder={{currentFolder}}{{/if}}{{#if currentSearch}}&search={{currentSearch}}{{/if}}"
+                class="px-3 py-1.5 rounded-lg font-mono text-xs
+          dark:bg-stone-900 bg-stone-100 border dark:border-stone-800 border-stone-200
+          dark:text-stone-400 text-stone-600 dark:hover:border-amber-500/50 hover:border-amber-500/50
+          transition-all duration-150">
+                ← Prev
+            </a>
+            {{/if}}
+            <span class="font-mono text-xs dark:text-stone-600 text-stone-400">
+                {{foldersData.page}} / {{foldersData.total_pages}}
+            </span>
+            {{#if foldersData.next}}
+            <a href="?folderPage={{next foldersData.page}}{{#if currentFolder}}&folder={{currentFolder}}{{/if}}{{#if currentSearch}}&search={{currentSearch}}{{/if}}"
+                class="px-3 py-1.5 rounded-lg font-mono text-xs
+          dark:bg-stone-900 bg-stone-100 border dark:border-stone-800 border-stone-200
+          dark:text-stone-400 text-stone-600 dark:hover:border-amber-500/50 hover:border-amber-500/50
+          transition-all duration-150">
+                Next →
+            </a>
+            {{/if}}
+        </div>
+        {{/if}}
+    </div>
+    {{/if}}
+
+    <!-- ── Files in this context ── -->
+    {{#if filesData.results.length}}
+    <div>
+        <h3 class="font-display font-bold text-sm dark:text-white text-stone-900 mb-3">
+            Files
+            <span class="font-mono font-normal text-xs dark:text-stone-600 text-stone-400 ml-2">
+                {{filesData.count}}
+            </span>
+        </h3>
+
+        <div
+            class="dark:bg-obsidian-950 bg-white rounded-2xl border dark:border-stone-800 border-stone-200 overflow-hidden">
+            <!-- Header -->
+            <div class="grid grid-cols-12 gap-4 px-5 py-3 border-b dark:border-stone-800 border-stone-100">
+                <div
+                    class="col-span-5 font-mono text-[11px] uppercase tracking-widest dark:text-stone-600 text-stone-400">
+                    Name</div>
+                <div
+                    class="col-span-2 font-mono text-[11px] uppercase tracking-widest dark:text-stone-600 text-stone-400">
+                    Type</div>
+                <div
+                    class="col-span-2 font-mono text-[11px] uppercase tracking-widest dark:text-stone-600 text-stone-400">
+                    Size</div>
+                <div
+                    class="col-span-2 font-mono text-[11px] uppercase tracking-widest dark:text-stone-600 text-stone-400">
+                    Uploaded</div>
+                <div class="col-span-1"></div>
+            </div>
+
+            {{#each filesData.results}}
+            <div class="grid grid-cols-12 gap-4 px-5 py-3.5
+        border-b dark:border-stone-800/50 border-stone-100 last:border-0
+        dark:hover:bg-stone-900/50 hover:bg-stone-50
+        transition-colors duration-100 group">
+
+                <!-- Name + icon -->
+                <div class="col-span-5 flex items-center gap-3 min-w-0">
+                    <div
+                        class="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center {{mimeBackground this.mimetype}}">
+                        {{{mimeIcon this.mimetype}}}
+                    </div>
+                    <div class="min-w-0">
+                        <a href="{{this.fileUrl}}" target="_blank" rel="noopener noreferrer" class="font-mono text-xs dark:text-stone-200 text-stone-700 truncate block
+                hover:text-amber-500 dark:hover:text-amber-400 transition-colors">
+                            {{this.fileName}}
+                        </a>
+                        <p class="font-mono text-[10px] dark:text-stone-600 text-stone-400">
+                            {{this.owner.username}}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Mimetype badge -->
+                <div class="col-span-2 flex items-center">
+                    <span class="font-mono text-[10px] px-2 py-1 rounded-md {{mimeBadge this.mimetype}}">
+                        {{mimeLabel this.mimetype}}
+                    </span>
+                </div>
+
+                <!-- Size -->
+                <div class="col-span-2 flex items-center">
+                    <span class="font-mono text-xs dark:text-stone-500 text-stone-400">
+                        {{formatSize this.fileSize}}
+                    </span>
+                </div>
+
+                <!-- Date -->
+                <div class="col-span-2 flex items-center">
+                    <span class="font-mono text-xs dark:text-stone-500 text-stone-400">
+                        {{formatDate this.createdAt}}
+                    </span>
+                </div>
+
+                <!-- Actions -->
+                <div
+                    class="col-span-1 flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                    <a href="{{this.fileUrl}}" target="_blank" rel="noopener noreferrer" title="Open" class="p-1.5 rounded-lg dark:hover:bg-stone-800 hover:bg-stone-100
+              dark:text-stone-500 text-stone-400
+              dark:hover:text-amber-400 hover:text-amber-500
+              transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
+                    <a href="/files/download/{{this._id}}" title="Download" class="p-1.5 rounded-lg dark:hover:bg-stone-800 hover:bg-stone-100
+              dark:text-stone-500 text-stone-400
+              dark:hover:text-stone-200 hover:text-stone-600
+              transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+
+        <!-- File pagination -->
+        {{#if (gt filesData.total_pages 1)}}
+        <div class="flex items-center justify-center gap-2 mt-4">
+            {{#if filesData.previous}}
+            <a href="?filePage={{prev filesData.page}}{{#if currentFolder}}&folder={{currentFolder}}{{/if}}{{#if currentSearch}}&search={{currentSearch}}{{/if}}"
+                class="flex items-center gap-1.5 px-4 py-2 rounded-xl font-mono text-xs
+          dark:bg-stone-900 bg-white border dark:border-stone-800 border-stone-200
+          dark:text-stone-400 text-stone-600
+          dark:hover:border-amber-500/50 hover:border-amber-500/50
+          transition-all duration-150">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Previous
+            </a>
+            {{/if}}
+
+            {{#times filesData.total_pages}}
+            <a href="?filePage={{this}}{{#if ../currentFolder}}&folder={{../currentFolder}}{{/if}}{{#if ../currentSearch}}&search={{../currentSearch}}{{/if}}"
+                class="w-9 h-9 rounded-xl font-mono text-xs flex items-center justify-center border transition-all duration-150
+          {{#if (eq this ../filesData.page)}}
+            bg-amber-500 border-amber-500 text-obsidian-950 font-bold
+          {{else}}
+            dark:bg-stone-900 bg-white dark:border-stone-800 border-stone-200
+            dark:text-stone-400 text-stone-600
+            dark:hover:border-amber-500/50 hover:border-amber-500/50
+          {{/if}}">
+                {{this}}
+            </a>
+            {{/times}}
+
+            {{#if filesData.next}}
+            <a href="?filePage={{next filesData.page}}{{#if currentFolder}}&folder={{currentFolder}}{{/if}}{{#if currentSearch}}&search={{currentSearch}}{{/if}}"
+                class="flex items-center gap-1.5 px-4 py-2 rounded-xl font-mono text-xs
+          dark:bg-stone-900 bg-white border dark:border-stone-800 border-stone-200
+          dark:text-stone-400 text-stone-600
+          dark:hover:border-amber-500/50 hover:border-amber-500/50
+          transition-all duration-150">
+                Next
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
+            {{/if}}
+        </div>
+        {{/if}}
+    </div>
+    {{/if}}
+
+    <!-- ── Empty state ── -->
+    {{#unless foldersData.results.length}}
+    {{#unless filesData.results.length}}
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div
+            class="w-16 h-16 rounded-2xl dark:bg-stone-900 bg-stone-50 border dark:border-stone-800 border-stone-200 flex items-center justify-center mb-5">
+            {{#if currentSearch}}
+            <svg class="w-7 h-7 dark:text-stone-700 text-stone-300" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            {{else}}
+            <svg class="w-7 h-7 dark:text-stone-700 text-stone-300" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 7a2 2 0 012-2h4.586a1 1 0 01.707.293L12 7h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+            </svg>
+            {{/if}}
+        </div>
+        {{#if currentSearch}}
+        <p class="font-display font-bold text-lg dark:text-stone-500 text-stone-400 mb-1">No results found</p>
+        <p class="font-mono text-xs dark:text-stone-600 text-stone-400 mb-6">Nothing matched "{{currentSearch}}"</p>
+        <a href="/explore{{#if currentFolder}}?folder={{currentFolder}}{{/if}}" class="px-4 py-2.5 rounded-xl font-mono text-xs
+        dark:bg-stone-900 bg-stone-100 border dark:border-stone-800 border-stone-200
+        dark:text-stone-300 text-stone-600 transition-colors">
+            Clear search
+        </a>
+        {{else}}
+        <p class="font-display font-bold text-lg dark:text-stone-500 text-stone-400 mb-1">
+            {{#if currentFolder}}This folder is empty{{else}}Nothing here yet{{/if}}
+        </p>
+        <p class="font-mono text-xs dark:text-stone-600 text-stone-400 mb-6">
+            Upload files or create a folder to get started
+        </p>
+        <button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-mono text-xs
+        bg-amber-500 hover:bg-amber-400 text-obsidian-950 font-bold transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Upload Files
+        </button>
+        {{/if}}
+    </div>
+    {{/unless}}
+    {{/unless}}
+
+</div>
+
+{{> upload-form}}

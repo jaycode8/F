@@ -6,7 +6,7 @@ import fs from "fs/promises";
 
 const allowedExt = [
     ".png", ".jpg", ".jpeg", ".webp", ".gif",
-    ".pdf", ".doc", ".docx",
+    ".pdf", ".doc", ".docx", ".md",
     ".xls", ".xlsx",
     ".txt",
     ".zip"
@@ -74,7 +74,7 @@ export const upload = multer({
         const ext = path.extname(file.originalname).toLowerCase();
 
         if (!allowedExt.includes(ext)) {
-            return cb(new Error("Only image files are allowed"));
+            return cb(new Error("File extension is not supported."));
         }
         cb(null, true);
     },

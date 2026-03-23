@@ -1,31 +1,17 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
-const filesSchema = new mongoose.Schema(
+const folderSchema = new mongoose.Schema(
     {
         _id: {
             type: String,
             default: uuidv4
         },
 
-        fileUrl: {
+        name: {
             type: String,
-            required: true
-        },
-
-        fileName: {
-            type: String,
-            required: true
-        },
-
-        mimetype: {
-            type: String,
-            required: true
-        },
-
-        fileSize: {
-            type: Number,
-            required: true
+            required: true,
+            trim: true,
         },
 
         owner: {
@@ -35,13 +21,18 @@ const filesSchema = new mongoose.Schema(
             index: true
         },
 
-        folder: {
+        parent: {
             type: String,
             ref: "folders",
             default: null
+        },
+
+        level: {
+            type: Number,
+            default: 0
         }
     },
     { timestamps: true }
 );
 
-export default mongoose.model("files", filesSchema);
+export default mongoose.model("folders", folderSchema);

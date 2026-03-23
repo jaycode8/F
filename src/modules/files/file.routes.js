@@ -6,13 +6,15 @@ import { handleUpload } from "../../middlewares/file.middleware.js";
 
 const router = Router();
 
+// router.use(AuthMiddleware.requireAuth);
+
 router.route("/:id")
     .get(FileControllers.get)
     .patch(handleUpload(upload), FileControllers.update)
     .delete(FileControllers.destroy);
 
 router.route("/")
-    .post(AuthMiddleware.requireAuth, handleUpload(upload.array("files", 10)), FileControllers.add)
+    .post(handleUpload(upload.array("files", 10)), FileControllers.add)
     .get(FileControllers.list);
 
 export default router;

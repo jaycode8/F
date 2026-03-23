@@ -12,8 +12,9 @@ const __dirname = path.dirname(__filename);
 
 import UserRoutes from "./modules/users/user.routes.js";
 import AuthRoutes from "./modules/auth/auth.routes.js";
-import FileRoutes from "./modules/files/file.routers.js";
+import FileRoutes from "./modules/files/file.routes.js";
 import CoreRoutes from "./modules/core/core.routes.js";
+import FolderRoutes from "./modules/folders/folder.routes.js";
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use("/", CoreRoutes);
 app.use("/users", UserRoutes);
 app.use("/auth", AuthRoutes);
 app.use("/files", FileRoutes);
+app.use("/folders", FolderRoutes);
 
 app.get("/health", (req, res) => {
     res.status(200).json({
